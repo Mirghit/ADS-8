@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
-#include <string>
 
 template<typename T>
 class BST {
@@ -19,12 +18,10 @@ class BST {
   };
 
   Node *root;
-  int len;
 
   void insert(Node*& node, const T& key) {
     if (node == nullptr) {
       node = new Node(key);
-      len++;
       return;
     }
     if (key == node->key) {
@@ -37,30 +34,24 @@ class BST {
   }
 
   bool search(Node* node, const T& val) const {
-   if (!node) {
-    return 0;
-   }
-   if (val == node->key) {
-    return node->count;
-   } else if (val > node->key) {
-    return search(node->right, key);
-   } else {
-    return search(node->left, key);
-   }
+    if (node == nullptr) return false;
+    if (val == node->key) return true;
+    if (val > node->key) return search(node->right, val);
+    return search(node->left, val);
   }
 
   int depth(Node *node) const {
-    if (node == nullptr) return -1;
-    int rightElementDepth = depth(node->right);
-    int leftElementDepth = depth(node->left);
-    return std::max(rightElementDepth, leftElementDepth) + 1;
+    if (node == nullptr) return 0;
+    return 1 + std::max(depth(node->left), depth(node->right));
   }
+
   void gathering(Node *node, std::vector<std::pair<T, int>> &vect) const {
     if (node == nullptr) return;
     gathering(node->left, vect);
     vect.push_back(std::make_pair(node->key, node->freq));
     gathering(node->right, vect);
   }
+
   void clear(Node *node) {
     if (node == nullptr) return;
     clear(node->left);
@@ -71,12 +62,11 @@ class BST {
  public:
   BST() : root(nullptr) {}
   ~BST() { clear(root); }
-  bool empty() const {
-   return root == nullptr;
-  }
+
   void insert(const T& key) { insert(root, key); }
   bool search(const T& val) const { return search(root, val); }
   int depth() const { return depth(root); }
+
   std::vector<std::pair<T, int>> collectNodes() const {
     std::vector<std::pair<T, int>> res;
     gathering(root, res);
