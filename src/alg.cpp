@@ -1,10 +1,11 @@
 // Copyright 2021 NNTU-CS
 #include "bst.h"
 #include <iostream>
+#include <cctype>
 #include <fstream>
 #include <algorithm>
 #include <string>
-#include <cctype>
+#include <vector>
 #include <utility>
 
 void makeTree(BST<std::string>& tree, const char *filename) {
@@ -17,14 +18,14 @@ void makeTree(BST<std::string>& tree, const char *filename) {
   char currSymbol;
   while (file.get(currSymbol)) {
     unsigned char unsChr = static_cast<unsigned char>(currSymbol);
-        if (std::isalpha(unsChr)) {
-            word.push_back(std::tolower(unsChr));
-        } else {
-            if (!word.empty()) {
-                tree.insert(word);
-                word.clear();
-            }
-        }
+    if (std::isalpha(unsChr)) {
+      word.push_back(std::tolower(unsChr));
+    } else {
+      if (!word.empty()) {
+        tree.insert(word);
+        word.clear();
+      }
+    }
   }
   if (!word.empty()) {
     tree.insert(word);
@@ -33,22 +34,17 @@ void makeTree(BST<std::string>& tree, const char *filename) {
 }
 
 void printFreq(BST<std::string>& tree) {
-  auto nodes = tree.collectNodes();
   std::sort(nodes.begin(), nodes.end(),
-        [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
-            if (a.second != b.second) return a.second > b.second;
-            return a.first < b.first;
-        });
+    [](const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
+      if (a.second != b.second) return a.second > b.second;
+      return a.first < b.first;
+    });
   std::ofstream outFile("result/freq.txt");
-    if (!outFile) {
-        std::cerr << "Не удалось открыть result/freq.txt" << std::endl;
+  for (const auto& p : nodes) {
+    std::cout << p.first << " - " << p.second << std::endl;
+    if (outFile) {
+      outFile << p.first << " - " << p.second << std::endl;
     }
-
-    for (const auto& p : nodes) {
-        std::cout << p.first << " - " << p.second << std::endl;
-        if (outFile) {
-            outFile << p.first << " - " << p.second << std::endl;
-        }
-    }
-    outFile.close();
+  }
+  outFile.close();
 }
