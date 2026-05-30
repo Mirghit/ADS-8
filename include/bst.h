@@ -52,19 +52,20 @@ class BST {
     vect.emplace_back(node->key, node->freq);
     gathering(node->right, vect);
   }
-  void clear (Node *node) {
+  void clear(Node *node) {
     if (node == nullptr) return;
     clear(node->left);
     clear(node->right);
     delete node;
   }
+
  public:
   BST() : root(nullptr) {}
   ~BST() { clear(root); }
   void insert(const T& key) { insert(root, key); }
   bool search(const T& key) const { return search(root, key); }
   int depth() const { return depth(root); }
-  std::vector<std::pair<T, int>> collectNodes () const {
+  std::vector<std::pair<T, int>> collectNodes() const {
     std::vector<std::pair<T, int>> res;
     gathering(root, res);
     return res;
