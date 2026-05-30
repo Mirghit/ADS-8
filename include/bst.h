@@ -17,10 +17,15 @@ class BST {
     Node *right;
     explicit Node(const T& k) : key(k), freq(1), left(nullptr), right(nullptr) {}
   };
+
   Node *root;
+  int len;
+
   void insert(Node*& node, const T& key) {
     if (node == nullptr) {
       node = new Node(key);
+      len++;
+      return;
     }
     if (key == node->key) {
       node->freq++;
@@ -29,22 +34,23 @@ class BST {
     } else {
       insert(node->left, key);
     }
-   return node;
   }
+
   bool search(Node* node, const T& val) const {
-        if (!node) {
-          return false;
-        }
-        if (val == node->key) {
-          return node;
-        } else if (val > node->key) {
-          return search(node->right, key);
-        } else {
-          return search(node->left, key);
-        }
+   if (!node) {
+    return 0;
+   }
+   if (val == node->key) {
+    return node->count;
+   } else if (val > node->key) {
+    return search(node->right, key);
+   } else {
+    return search(node->left, key);
+   }
   }
+
   int depth(Node *node) const {
-    if (node == nullptr) return 0;
+    if (node == nullptr) return -1;
     int rightElementDepth = depth(node->right);
     int leftElementDepth = depth(node->left);
     return std::max(rightElementDepth, leftElementDepth) + 1;
@@ -61,13 +67,13 @@ class BST {
     clear(node->right);
     delete node;
   }
-  bool empty() const {
-   return root == nullptr;
-  }
 
  public:
   BST() : root(nullptr) {}
   ~BST() { clear(root); }
+  bool empty() const {
+   return root == nullptr;
+  }
   void insert(const T& key) { insert(root, key); }
   bool search(const T& val) const { return search(root, val); }
   int depth() const { return depth(root); }
