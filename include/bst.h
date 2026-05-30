@@ -1,11 +1,10 @@
-// Copyright 2021 NNTU-CS
 #ifndef INCLUDE_BST_H_
 #define INCLUDE_BST_H_
 
-#include <algorithm>
+#include <string>
 #include <vector>
 #include <utility>
-#include <string>
+#include <algorithm>
 
 template<typename T>
 class BST {
@@ -13,66 +12,60 @@ class BST {
   struct Node {
     T key;
     int freq;
-    Node *left;
-    Node *right;
+    Node* left;
+    Node* right;
     explicit Node(const T& k) : key(k), freq(1), left(nullptr), right(nullptr) {}
   };
-
-  Node *root;
+  Node* root;
   int len;
-
-  void insert(Node*& node, const T& k) {
+  void add(Node*& node, const T& k) {
     if (node == nullptr) {
       node = new Node(k);
       len++;
       return;
     }
-    if (k == node->key) {
-      node->freq++;
+    if (k < node->key) {
+      add(node->left, k);
     } else if (k > node->key) {
-      insert(node->right, k);
+      add(node->right, k);
     } else {
-      insert(node->left, k);
+      node->freq++;
     }
   }
-
-  bool search(Node* node, const T& k) const {
+  int founder(Node* node, const T& k) const {
     if (node == nullptr) return 0;
     if (k == node->key) return node->freq;
-    if (k > node->key) return search(node->right, k);
-    return search(node->left, k);
+    if (k < node->key) return founder(node->left, k);
+    return founder(node->right, k);
   }
-
-  int depth(Node *node) const {
-    if (node == nullptr) return 0;
-    return 1 + std::max(depth(node->left), depth(node->right));
+  int depthOfTree(Node* node) const {
+    if (node == nullptr) return -1;
+    int leftH = depthOfTree(node->left);
+    int rightH = depthOfTree(node->right);
+    return std::max(leftH, rightH) + 1;
   }
-
-  void gathering(Node *node, std::vector<std::pair<T, int>>& vect) const {
+  void gathering(Node* node, std::vector<std::pair<T, int>>& vec) const {
     if (node == nullptr) return;
-    gathering(node->left, vect);
-    vect.push_back(std::make_pair(node->key, node->freq));
-    gathering(node->right, vect);
+    gathering(node->left, vec);
+    vec.push_back(std::make_pair(node->key, node->freq));
+    gathering(node->right, vec);
   }
-
-  void clear(Node *node) {
+  void remove(Node* node) {
     if (node == nullptr) return;
-    clear(node->left);
-    clear(node->right);
+    remove(node->left);
+    remove(node->right);
     delete node;
   }
 
  public:
   BST() : root(nullptr), len(0) {}
-  ~BST() { clear(root); }
-
-  void insert(const T& k) { insert(root, k); }
-  bool search(const T& k) const { return search(root, k); }
-  int depth() const { return depth(root); }
-  int size() const { return len; }
+  ~BST() { remove(root); }
   bool empty() const { return root == nullptr; }
-
-  std::vector<std::pair<T, int>> collectNodes() const {
+  void insert(const T& k) { add(root, k); }
+  int depth() const { return depthOfTree(root); }
+  int search(const T& k) const { return founder(root, k); }
+  int size() const { return len; }
+  std::vector<std::pair<T, int>> getAll() const {
     std::vector<std::pair<T, int>> res;
     gathering(root, res);
     return res;
