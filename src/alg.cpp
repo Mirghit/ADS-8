@@ -1,10 +1,4 @@
 // Copyright 2021 NNTU-CS
-#include "bst.h"
-#include  <iostream>
-#include  <fstream>
-#include  <locale>
-#include  <cstdlib>
-#include  "bst.h"
 #include <algorithm>
 #include <cctype>
 #include <fstream>
@@ -12,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "bst.h"
 void makeTree(BST<std::string>& tree, const char* filename) {
   std::ifstream file(filename);
   if (!file.is_open()) {
